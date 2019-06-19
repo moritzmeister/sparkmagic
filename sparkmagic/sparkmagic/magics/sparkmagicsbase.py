@@ -269,7 +269,18 @@ class Client(MessageSocket):
 
             # 3. Start thread running polling logs in Maggy.
             self.hb_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.hb_sock.connect(self.server_addr)
+
+            num_tries = 10
+            while num_tries > 0:
+                num_tries -= 1
+                try:
+                    if DEBUG:
+                        self.ipython_display.writeln("Wait for the maggy server...")
+                    self.hb_sock.connect(self.server_addr)
+                    break
+                except ConnectionRefusedError:
+                    time.sleep(self.hb_interval)
+                    pass
 
             if DEBUG:
                 self.ipython_display.writeln("Connected to the maggy server...")
