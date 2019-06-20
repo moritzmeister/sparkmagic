@@ -278,7 +278,11 @@ class Client(MessageSocket):
                         self.ipython_display.writeln("Wait for the maggy server...")
                     self.hb_sock.connect(self.server_addr)
                     break
-                except ConnectionRefusedError:
+                # throws ConnectionRefusedError if maggy is not ready yet
+                # throws TypeError if REST API returns no maggy address
+                # this happens when a second experiment is run from the same
+                # app with an old maggy version
+                except (ConnectionRefusedError, TypeError):
                     time.sleep(self.hb_interval)
                     pass
 
