@@ -283,7 +283,7 @@ class Client(MessageSocket):
                     pass
 
             if num_tries == 0:
-                raise Exception("Can't reach Maggy server. No progress information available. Job continues running anyway.")
+                self.ipython_display.writeln("WARN: Can't reach Maggy server. No progress information and logs available. Job continues running anyway.")
 
             if DEBUG:
                 self.ipython_display.writeln("Connected to the maggy server...")
