@@ -284,36 +284,36 @@ class Client(MessageSocket):
 
             if num_tries == 0:
                 self.ipython_display.writeln("WARN: Can't reach Maggy server. No progress information and logs available. Job continues running anyway.")
+            else:
+                if DEBUG:
+                    self.ipython_display.writeln("Connected to the maggy server...")
 
-            if DEBUG:
-                self.ipython_display.writeln("Connected to the maggy server...")
+                # get total number of trials for first time to init tqdm
+                resp = self._request(self.hb_sock,'LOG')
 
-            # get total number of trials for first time to init tqdm
-            resp = self._request(self.hb_sock,'LOG')
+                if DEBUG:
+                    self.ipython_display.writeln('First message received: {}'.format(resp))
 
-            if DEBUG:
-                self.ipython_display.writeln('First message received: {}'.format(resp))
+                self._num_trials = 0
+                self._trials_todate = 0
+                if resp['num_trials'] != None:
+                    self._num_trials = resp['num_trials']
+                if resp['to_date'] != None:
+                    self._trials_todate = resp['to_date']
 
-            self._num_trials = 0
-            self._trials_todate = 0
-            if resp['num_trials'] != None:
-                self._num_trials = resp['num_trials']
-            if resp['to_date'] != None:
-                self._trials_todate = resp['to_date']
+                with tqdm_notebook(range(self._num_trials),
+                    desc='Maggy experiment',
+                    unit='trial',
+                    postfix={'early stopped': resp['stopped'],
+                        'best metric': resp['metric']}) as pbar:
 
-            with tqdm_notebook(range(self._num_trials),
-                desc='Maggy experiment',
-                unit='trial',
-                postfix={'early stopped': resp['stopped'],
-                    'best metric': resp['metric']}) as pbar:
-
-                while not self.done:
-                    time.sleep(self.hb_interval)
-                    resp = self._request(self.hb_sock,'LOG')
-                    if DEBUG:
-                        self.ipython_display.writeln('Another message received: {}'.format(resp))
-                    if resp:
-                        _ = self._handle_message(resp, pbar)
+                    while not self.done:
+                        time.sleep(self.hb_interval)
+                        resp = self._request(self.hb_sock,'LOG')
+                        if DEBUG:
+                            self.ipython_display.writeln('Another message received: {}'.format(resp))
+                        if resp:
+                            _ = self._handle_message(resp, pbar)
 
 
         self.t = Thread(target=_heartbeat, args=(self,))
