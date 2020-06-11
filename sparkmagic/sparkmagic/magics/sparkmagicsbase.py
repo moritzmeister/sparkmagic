@@ -48,7 +48,7 @@ except ImportError:
 
 MAX_RETRIES = 3
 BUFSIZE = 1024 * 2
-DEBUG = False
+DEBUG = True
 
 @magics_class
 class SparkMagicBase(Magics):
