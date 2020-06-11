@@ -308,7 +308,7 @@ class Client(MessageSocket):
                     self._get_maggy_driver()
                     num_tries = 0
                     self.server_addr = (self._maggy_ip, self._maggy_port)
-                except:
+                except MaggyNotRegisteredError:
                     time.sleep(self.hb_interval)
                     pass
 
@@ -436,8 +436,7 @@ class Client(MessageSocket):
 
         # '500' response if maggy has not registered yet
         if response.status != 200:
-            print(response)
-            raise Exception
+            raise MaggyNotRegisteredError
         resp_body = response.read()
         resp = json.loads(resp_body)
 
@@ -484,3 +483,6 @@ class Client(MessageSocket):
             connection.request(method, resource, body, headers)
             response = connection.getresponse()
         return response
+
+class MaggyNotRegisteredError(Exception):
+    """dfasdfsa"""
