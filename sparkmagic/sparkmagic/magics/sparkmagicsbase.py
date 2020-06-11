@@ -436,6 +436,7 @@ class Client(MessageSocket):
 
         # '500' response if maggy has not registered yet
         if response.status != 200:
+            print(response)
             raise Exception
         resp_body = response.read()
         resp = json.loads(resp_body)
