@@ -299,7 +299,7 @@ class Client(MessageSocket):
         def _heartbeat(self):
             self._app_id = self.spark_controller.get_app_id(self.session_name)
 
-            num_tries = 10
+            num_tries = 20
             while num_tries > 0:
                 num_tries -= 1
                 try:
